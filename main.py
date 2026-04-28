@@ -39,7 +39,7 @@ def generate_clean_event():
     vehicle_cache.append(vid)
 
     return{
-        "vehichle_id" : vid,
+        "vehicle_id": vid,
         "road_name": random.choice(roads),
         "pune_area": random.choice(areas),
         "speed": random.randint(20,100),
@@ -50,7 +50,7 @@ def generate_clean_event():
     }
 
 def generate_dirty_event():
-    dirty_type = random.choiceI([
+    dirty_type = random.choice([
         "null_speed",
         "negative_speed",
         "extreme_speed",
@@ -78,8 +78,8 @@ def generate_dirty_event():
 
     elif dirty_type == "late_event":
         base["event_time"] = (
-            datetime.now(pytz.utc)- timedelta(minutes=random.randomint(10,120))
-        ).isoformat
+            datetime.now(pytz.utc)- timedelta(minutes=random.randint(10,120))
+        ).isoformat()
     
     elif dirty_type == "wrong_datatype":
         base["speed"] = "FAST"
@@ -101,11 +101,11 @@ while True:
         event = generate_dirty_event()
 
     if isinstance(event,str):
-        producer.send ("pune-traffic-topic", value = {"raw":event})
+        producer.send("pune-traffic-topic", value={"raw":event})
         print("CORRUPT EVENT SENT")
 
     else:
-        producer.send("pune-traffic_topic", value=event)
+        producer.send("pune-traffic-topic", value=event)
         print(event)
     
     time.sleep(random.uniform(0.5, 1.5))
