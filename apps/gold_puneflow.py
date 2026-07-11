@@ -8,6 +8,7 @@ spark = (
     .appName("TrafficGoldLayer")
     # cluster master
     .master("spark://spark-master:7077")
+    .config("spark.cores.max", "2")
     # delta lake
     .config("spark.sql.extensions",
             "io.delta.sql.DeltaSparkSessionExtension")

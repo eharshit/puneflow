@@ -7,9 +7,11 @@ from pyspark.sql.types import *
 
 spark = (
     SparkSession.builder
-    .appName("Puneflow_Lakehouse")
+    .appName("TrafficSilverLayer")
     # Master Node
     .master("spark://spark-master:7077")
+    # Limit resource usage so other layers can run
+    .config("spark.cores.max", "2")
     # Delta lake 
     .config("spark.sql.extensions",
             "io.delta.sql.DeltaSparkSessionExtension")
