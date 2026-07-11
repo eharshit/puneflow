@@ -15,7 +15,7 @@ services:
     volumes:
       - metastore-db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
+      test: [ "CMD-SHELL", "pg_isready -U hive -d metastore" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -32,9 +32,7 @@ services:
         condition: service_healthy
     environment:
       SERVICE_NAME: metastore
-      DB_DRIVER: postgres #tells Hive to use Postgres as DB
-
-        # Set to "false" on FIRST run, then change to "true" after that
+      DB_DRIVER: postgres # Set to "false" on FIRST run, then change to "true" after that
       IS_RESUME: "true"
     ports:
       - "9083:9083"
@@ -51,20 +49,17 @@ services:
     container_name: spark-master
     hostname: spark-master
     command: >
-      bash -c "
-      /opt/spark/sbin/start-master.sh &&
-      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out
-      "
+      bash -c " /opt/spark/sbin/start-master.sh && tail -f /opt/spark/logs/spark--org.apache.spark.deploy.master*.out "
     ports:
       - "8080:8080" # Spark Master UI
       - "7077:7077" # cluster connection endpoint
-    
+
     volumes:
       - ./warehouse:/opt/spark/warehouse
       - ./apps:/opt/spark-apps
       - ./spark-ivy:/tmp/.ivy
     healthcheck:
-      test: ["CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8080'"]
+      test: [ "CMD-SHELL", "bash -c 'echo > /dev/tcp/localhost/8080'" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -78,11 +73,12 @@ services:
     container_name: spark-worker
     hostname: spark-worker
     command: >
-      bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 2 --memory 2g &&
-      tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out"
+      bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077 --cores 6 --memory 6g && tail -f /opt/spark/logs/spark--org.apache.spark.deploy.worker*.out"
     depends_on:
       spark-master:
         condition: service_healthy
+    ports:
+      - "10000:10000"
 
     volumes:
       - ./warehouse:/opt/spark/warehouse
@@ -113,7 +109,7 @@ services:
     volumes:
       - kafka-data:/var/kafka-data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1"]
+      test: [ "CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 > /dev/null 2>&1" ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -134,6 +130,8 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
     restart: unless-stopped
+
+
 
 volumes:
   metastore-db-data:
